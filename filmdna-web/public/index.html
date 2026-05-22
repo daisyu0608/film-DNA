@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>filmDNA · 你的电影审美图谱</title>
+<meta name="description" content="输入你最爱的 5-10 部电影，AI 测出你的电影审美 DNA：导演谱系坐标、16 型电影人格、专属片单推荐。基于鲍德威尔电影理论。" />
+<style>
+  :root {
+    --paper:    #ffffff;
+    --paper-2:  #f7f5ef;
+    --ink:      #14120f;
+    --ink-2:    #3a3833;
+    --muted:    #8a857a;
+    --line:     #e3ddcf;
+    --line-soft:#efeae0;
+    --acc:      #b6442e;
+    --acc-2:    #8a7140;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--paper); }
+  body {
+    color: var(--ink);
+    font-family: "Source Han Serif SC", "Noto Serif CJK SC", "Songti SC", "STSong", serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 56px 24px 96px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 760px; margin: 0 auto; }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 56px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--ink);
+  }
+  .brand {
+    font-size: 11px; letter-spacing: 8px;
+    color: var(--muted); margin-bottom: 12px;
+    font-family: -apple-system, "Helvetica Neue", sans-serif;
+  }
+  h1 {
+    font-size: 32px; font-weight: 600;
+    color: var(--ink); letter-spacing: 4px; margin-bottom: 6px;
+  }
+  .sub {
+    font-size: 12px; color: var(--muted);
+    font-style: italic; letter-spacing: 1px;
+  }
+  .intro-blurb {
+    margin-top: 24px;
+    color: var(--ink-2);
+    font-size: 13px;
+    line-height: 1.8;
+    text-align: center;
+    max-width: 480px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* FORM */
+  .form-area {
+    margin-bottom: 56px;
+    padding: 24px;
+    border: 1px solid var(--line);
+    background: var(--paper-2);
+  }
+  .form-label {
+    font-size: 11px; letter-spacing: 4px;
+    color: var(--muted); text-transform: uppercase;
+    margin-bottom: 10px;
+    font-family: -apple-system, sans-serif;
+  }
+  textarea {
+    width: 100%; min-height: 120px;
+    background: var(--paper); color: var(--ink);
+    border: 1px solid var(--line);
+    padding: 12px;
+    font-family: inherit; font-size: 14px;
+    line-height: 1.8;
+    resize: vertical;
+  }
+  textarea:focus { outline: 1px solid var(--acc); }
+  button {
+    background: var(--ink); color: var(--paper);
+    border: none; padding: 10px 22px;
+    margin-top: 12px; margin-right: 8px;
+    font-family: inherit; font-size: 12px;
+    cursor: pointer; letter-spacing: 2px;
+    transition: opacity 0.15s;
+  }
+  button:hover { opacity: 0.85; }
+  button:disabled { opacity: 0.5; cursor: wait; }
+  button.ghost {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-2);
+  }
+  .hint {
+    color: var(--muted); font-size: 11px;
+    font-style: italic; margin-left: 8px;
+  }
+
+  /* TIPS */
+  .examples {
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .examples-title {
+    font-family: -apple-system, sans-serif;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 10px;
+    margin-bottom: 6px;
+  }
+  .ex-pill {
+    display: inline-block;
+    margin: 3px 4px 0 0;
+    padding: 3px 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 11px;
+    color: var(--ink-2);
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .ex-pill:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* SECTION */
+  h2 {
+    font-size: 13px; letter-spacing: 6px;
+    font-weight: 500; color: var(--ink);
+    margin: 56px 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--ink);
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  h2 .sec-en {
+    font-size: 10px; color: var(--muted);
+    font-style: italic; letter-spacing: 1px;
+    font-family: -apple-system, sans-serif;
+  }
+
+  /* INPUT FILMS LIST */
+  .film-line {
+    display: flex; justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px dotted var(--line-soft);
+    font-size: 14px;
+  }
+  .film-line:last-child { border-bottom: none; }
+  .film-line .num {
+    color: var(--muted); width: 30px;
+    font-family: -apple-system, sans-serif; font-size: 12px;
+  }
+  .film-line .title { flex: 1; color: var(--ink); }
+  .film-line .director { color: var(--muted); font-size: 13px; }
+  .unmatched-warn {
+    color: var(--acc); font-size: 12px;
+    margin-top: 12px; font-style: italic;
+  }
+
+  /* HEADLINE */
+  .headline {
+    margin: 36px 0 8px;
+    padding: 32px 0;
+    text-align: center;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .dna-code {
+    font-family: "JetBrains Mono", "SF Mono", monospace;
+    font-size: 28px; letter-spacing: 6px;
+    color: var(--ink); margin-bottom: 12px;
+  }
+  .persona-name {
+    font-size: 28px; color: var(--ink);
+    margin-bottom: 6px; letter-spacing: 4px;
+  }
+  .persona-tagline { font-style: italic; color: var(--muted); font-size: 13px; }
+  .palette-row { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+  .swatch {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1px solid var(--line);
+  }
+
+  /* CORE */
+  .core-row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 36px; align-items: start;
+  }
+  @media (max-width: 720px) { .core-row { grid-template-columns: 1fr; } }
+  svg.radar { width: 100%; max-width: 260px; display: block; margin: 0 auto; }
+
+  /* TABLES */
+  table.dim-table, table.tag-table, table.dir-table, table.rec-table {
+    width: 100%; border-collapse: collapse;
+  }
+  .dim-table tr, .dir-table tr, .rec-table tr { border-bottom: 1px solid var(--line-soft); }
+  .tag-table tr { border-bottom: 1px dotted var(--line-soft); }
+  .dim-table tr:last-child, .tag-table tr:last-child,
+  .dir-table tr:last-child, .rec-table tr:last-child { border-bottom: none; }
+
+  .dim-table td { padding: 10px 0; font-size: 14px; vertical-align: middle; }
+  .dim-table td.label { color: var(--ink); width: 30%; }
+  .dim-table td.poles {
+    color: var(--muted); font-size: 11px; text-align: center;
+    letter-spacing: 1px; font-family: -apple-system, sans-serif;
+  }
+  .dim-table td.value {
+    width: 60px; text-align: right; color: var(--acc);
+    font-family: "JetBrains Mono", monospace; font-size: 13px;
+  }
+  .group-divider {
+    padding-top: 16px !important; padding-bottom: 6px !important;
+    color: var(--muted) !important; font-size: 11px !important;
+    letter-spacing: 4px !important; text-transform: uppercase;
+    font-family: -apple-system, sans-serif;
+  }
+
+  .tag-table td { padding: 10px 0; font-size: 14px; }
+  .tag-table td.tag-key {
+    width: 35%; color: var(--muted);
+    letter-spacing: 2px; font-family: -apple-system, sans-serif; font-size: 12px;
+  }
+  .tag-table td.tag-val { color: var(--ink); font-weight: 600; }
+
+  .dir-table td { padding: 14px 0; vertical-align: top; }
+  .dir-table .num {
+    width: 28px; color: var(--muted);
+    font-family: -apple-system, sans-serif; font-size: 12px; padding-top: 16px;
+  }
+  .dir-table .name { font-size: 17px; color: var(--ink); margin-bottom: 2px; }
+  .dir-table .name-en {
+    font-size: 11px; color: var(--muted);
+    font-style: italic; margin-bottom: 4px;
+  }
+  .dir-table .sig { font-size: 12px; color: var(--ink-2); }
+  .dir-table .pct {
+    width: 48px; text-align: right; color: var(--acc);
+    font-family: "JetBrains Mono", monospace; font-size: 13px; padding-top: 16px;
+  }
+
+  .rec-table td { padding: 10px 0; vertical-align: top; font-size: 14px; }
+  .rec-table .num {
+    width: 28px; color: var(--muted);
+    font-family: -apple-system, sans-serif; font-size: 11px;
+  }
+  .rec-table .title { color: var(--ink); }
+  .rec-table .meta { color: var(--muted); font-size: 12px; margin-top: 2px; }
+  .rec-table .reason {
+    color: var(--acc-2); font-size: 11px;
+    font-style: italic; margin-top: 2px;
+  }
+
+  /* COMPASS */
+  .compass {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  }
+  @media (max-width: 720px) { .compass { grid-template-columns: repeat(2, 1fr); } }
+  .compass-key {
+    font-size: 10px; letter-spacing: 3px; color: var(--muted);
+    margin-bottom: 4px; font-family: -apple-system, sans-serif;
+    text-transform: uppercase;
+  }
+  .compass-val { font-size: 16px; color: var(--ink); }
+  .compass-detail { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  /* SHARE BAR */
+  .share-bar {
+    margin-top: 56px;
+    padding: 24px;
+    background: var(--paper-2);
+    border: 1px solid var(--line);
+    text-align: center;
+  }
+  .share-bar p {
+    font-size: 13px; color: var(--ink-2); margin-bottom: 12px;
+  }
+  .share-bar button { font-size: 13px; padding: 12px 24px; }
+
+  /* FOOTER */
+  footer {
+    margin-top: 64px; padding-top: 18px;
+    border-top: 1px solid var(--ink);
+    text-align: center;
+    color: var(--muted); font-size: 10px;
+    letter-spacing: 4px; font-family: -apple-system, sans-serif;
+  }
+
+  /* LOADING */
+  .loading {
+    text-align: center; padding: 80px 20px;
+    color: var(--muted); font-style: italic;
+    font-size: 14px;
+  }
+  .loading.error { color: var(--acc); }
+
+  /* SHARE CARD MODAL */
+  .modal-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-content {
+    background: var(--paper);
+    padding: 24px;
+    max-width: 400px; max-height: 90vh;
+    overflow-y: auto;
+    text-align: center;
+  }
+  .modal-content img {
+    width: 100%; height: auto;
+    border: 1px solid var(--line);
+    margin-bottom: 16px;
+  }
+  .modal-content .save-hint {
+    font-size: 12px; color: var(--muted);
+    margin-bottom: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="brand">F · I · L · M · D · N · A</div>
+    <h1>电影审美 · 诊断报告</h1>
+    <div class="sub">five vectors · sixteen sub-dimensions · one thousand films</div>
+    <div class="intro-blurb">
+      输入你最爱的 5–10 部电影，<br/>
+      AI 算出你的导演谱系坐标 / 16 型电影人格 / 专属片单。
+    </div>
+  </header>
+
+  <div class="form-area">
+    <div class="form-label">输入你最爱的 5–10 部电影（每行一部）</div>
+    <textarea id="filmInput" placeholder="花样年华
+潜行者
+一一
+穆赫兰道
+迷失东京"></textarea>
+    <div>
+      <button id="btnAnalyze" onclick="runAnalysis()">开始分析</button>
+      <button class="ghost" onclick="clearInput()">清空</button>
+      <span class="hint" id="status"></span>
+    </div>
+    <div class="examples">
+      <div class="examples-title">示例 / 一键填入</div>
+      <span class="ex-pill" onclick="fillExample('art')">艺术片爱好者</span>
+      <span class="ex-pill" onclick="fillExample('commercial')">商业大片爱好者</span>
+      <span class="ex-pill" onclick="fillExample('asian')">东亚作者电影</span>
+      <span class="ex-pill" onclick="fillExample('lynch')">林奇/库布里克型</span>
+      <span class="ex-pill" onclick="fillExample('ghibli')">吉卜力宫崎骏型</span>
+    </div>
+  </div>
+
+  <div id="report-content">
+    <div class="loading">输入电影，点击"开始分析"</div>
+  </div>
+
+  <footer>
+    F I L M D N A · 镜头美学 / 叙事结构 / 类型偏好 / 导演谱系 四维交叉
+  </footer>
+
+</div>
+
+<!-- Share Card Modal -->
+<div class="modal-overlay" id="shareModal" onclick="closeShareModal(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="save-hint">长按保存图片，分享到小红书 / 朋友圈</div>
+    <img id="shareCardImg" alt="filmDNA share card" />
+    <button class="ghost" onclick="closeShareModal()">关闭</button>
+  </div>
+</div>
+
+<script src="./filmdna.js"></script>
+<script>
+const QUADRANT_ZH = {
+  art_cinema: "艺术电影", classical_narrative: "古典叙事",
+  classical_humanism: "古典人文", parametric: "参数化", post_classical: "后古典",
+};
+const REGION_ZH = {
+  east_asia: "东亚", europe: "欧洲", north_america: "北美",
+  latin_america: "拉美", middle_east: "中东", south_asia: "南亚",
+};
+const LINEAGE_ZH = {
+  art_cinema: "艺术电影", classical_narrative: "古典叙事",
+  classical_humanism: "古典人文", parametric: "参数化", post_classical: "后古典",
+};
+const GROUP_TITLES = {
+  visual: "视觉 / Visual", cinematic: "镜头 / Cinematic",
+  narrative: "叙事 / Narrative", genre: "类型 / Genre",
+};
+const SUB_DIM_ORDER = {
+  visual: ["color_temp","contrast","saturation","composition"],
+  cinematic: ["shot_length","camera_motion","distance","depth_of_field"],
+  narrative: ["non_linearity","pov","ending_openness","time_density"],
+  genre: ["auteurism","anti_genre","doc_fiction","animation_live"],
+};
+
+const EXAMPLES = {
+  art: "花样年华\n潜行者\n东京物语\n一一\n寄生虫",
+  commercial: "教父\n阿甘正传\n黑暗骑士\n阿凡达\n泰坦尼克号",
+  asian: "霸王别姬\n阳光灿烂的日子\n卧虎藏龙\n大象席地而坐\n寄生虫",
+  lynch: "穆赫兰道\n2001太空漫游\n闪灵\n发条橙\n蓝丝绒",
+  ghibli: "千与千寻\n你的名字\n龙猫\n哈尔的移动城堡\n天空之城",
+};
+
+function fillExample(key) {
+  document.getElementById("filmInput").value = EXAMPLES[key];
+  runAnalysis();
+}
+
+function clearInput() {
+  document.getElementById("filmInput").value = "";
+  document.getElementById("report-content").innerHTML =
+    '<div class="loading">输入电影，点击"开始分析"</div>';
+}
+
+let currentResult = null;
+
+async function runAnalysis() {
+  const raw = document.getElementById("filmInput").value;
+  const titles = raw.split(/[\n,，]+/).map(s => s.trim()).filter(Boolean);
+  if (titles.length < 3) {
+    document.getElementById("status").textContent = "至少输入 3 部";
+    return;
+  }
+  document.getElementById("status").textContent = "分析中...";
+  document.getElementById("btnAnalyze").disabled = true;
+
+  try {
+    await loadFilmDNAData();
+    const result = analyze(titles);
+    currentResult = result;
+    render(result);
+    document.getElementById("status").textContent = "";
+    // 滚动到结果区域
+    setTimeout(() => {
+      document.getElementById("report-content").scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  } catch (e) {
+    console.error(e);
+    document.getElementById("report-content").innerHTML =
+      `<div class="loading error">分析失败：${e.message}</div>`;
+  } finally {
+    document.getElementById("btnAnalyze").disabled = false;
+  }
+}
+
+function render(data) {
+  if (data.error) {
+    document.getElementById("report-content").innerHTML =
+      `<div class="loading error">⚠ ${data.error}<br/><br/>未识别：${data.unmatched.join("、")}</div>`;
+    return;
+  }
+  let html = "";
+
+  // 1. 输入清单
+  html += `<h2>① 输入清单 <span class="sec-en">your input</span></h2>`;
+  data.input_films.forEach((f, i) => {
+    html += `<div class="film-line">
+      <span class="num">${String(i+1).padStart(2,'0')}</span>
+      <span class="title">${f.title_zh}</span>
+      <span class="director">${f.director}</span>
+    </div>`;
+  });
+  if (data.unmatched && data.unmatched.length) {
+    html += `<div class="unmatched-warn">⚠ 未识别（库外电影）：${data.unmatched.join("、")}</div>`;
+  }
+
+  // 2. 主标
+  const p = data.personality;
+  html += `<div class="headline">
+    <div class="dna-code">${data.dna_string}</div>
+    <div class="persona-name">${p.type}</div>
+    <div class="persona-tagline">${p.tagline}</div>
+    <div class="palette-row">
+      ${p.color_palette.map(c => `<div class="swatch" style="background:${c}"></div>`).join("")}
+    </div>
+  </div>`;
+
+  // 3. 核心五维
+  html += `<h2>② 核心 五 维 <span class="sec-en">core radar</span></h2>`;
+  html += `<div class="core-row">
+    <div>${renderRadar(data.radar, data.geo_distribution)}</div>
+    <table class="tag-table">
+      ${data.diagnostic_tags.map(t => `
+        <tr><td class="tag-key">${t.label}</td><td class="tag-val">${t.value}</td></tr>
+      `).join("")}
+    </table>
+  </div>`;
+
+  // 4. 16 子维度
+  html += `<h2>③ 十六子维度 <span class="sec-en">sixteen sub-dimensions</span></h2>
+  <table class="dim-table">`;
+  ["visual","cinematic","narrative","genre"].forEach(group => {
+    html += `<tr><td class="group-divider" colspan="3">${GROUP_TITLES[group]}</td></tr>`;
+    SUB_DIM_ORDER[group].forEach(key => {
+      const d = data.sub_dimensions[key];
+      if (!d) return;
+      html += `<tr>
+        <td class="label">${d.label}</td>
+        <td class="poles">${d.low} ─ ${d.high}</td>
+        <td class="value">${d.percent}%</td>
+      </tr>`;
+    });
+  });
+  html += `</table>`;
+
+  // 5. 谱系
+  const topGeo = Object.entries(data.geo_distribution || {}).sort((a, b) => b[1] - a[1]);
+  const topLin = Object.entries(data.lineage_distribution || {}).sort((a, b) => b[1] - a[1]);
+  const topEra = Object.entries(data.era_distribution || {}).sort((a, b) => b[1] - a[1]);
+  html += `<h2>④ 谱系坐标 <span class="sec-en">compass</span></h2>
+  <div class="compass">
+    <div><div class="compass-key">象限</div>
+      <div class="compass-val">${QUADRANT_ZH[data.quadrant] || data.quadrant}</div>
+      <div class="compass-detail">Bordwell</div></div>
+    <div><div class="compass-key">地域</div>
+      <div class="compass-val">${REGION_ZH[topGeo[0]?.[0]] || "—"} ${Math.round((topGeo[0]?.[1] || 0)*100)}%</div>
+      <div class="compass-detail">${topGeo.slice(1, 3).map(([k, v]) => `${REGION_ZH[k] || k} ${Math.round(v*100)}%`).join(" · ")}</div></div>
+    <div><div class="compass-key">谱系</div>
+      <div class="compass-val">${LINEAGE_ZH[topLin[0]?.[0]] || "—"}</div>
+      <div class="compass-detail">${Math.round((topLin[0]?.[1] || 0)*100)}% 倾向</div></div>
+    <div><div class="compass-key">时代</div>
+      <div class="compass-val">${topEra[0]?.[0] || "—"}s</div>
+      <div class="compass-detail">主导 ${Math.round((topEra[0]?.[1] || 0)*100)}%</div></div>
+  </div>`;
+
+  // 6. 导演
+  html += `<h2>⑤ 你最像的三位 <span class="sec-en">closest directors</span></h2>
+  <table class="dir-table">`;
+  (data.closest_directors || []).forEach((d, i) => {
+    html += `<tr>
+      <td class="num">${String(i+1).padStart(2,'0')}</td>
+      <td><div class="name">${d.name}</div>
+        <div class="name-en">${d.name_en || ""}</div>
+        <div class="sig">${d.signature || ""}</div></td>
+      <td class="pct">${(d.similarity*100).toFixed(1)}%</td>
+    </tr>`;
+  });
+  html += `</table>`;
+
+  // 7. 推荐
+  html += `<h2>⑥ 你大概率会爱的十部 <span class="sec-en">recommendations</span></h2>
+  <table class="rec-table">`;
+  (data.recommendations || []).forEach((r, i) => {
+    html += `<tr>
+      <td class="num">${String(i+1).padStart(2,'0')}</td>
+      <td><div class="title">《${r.title_zh}》</div>
+        <div class="meta">${r.director} · ${r.year || ""}</div>
+        <div class="reason">${r.reason || ""}</div></td>
+    </tr>`;
+  });
+  html += `</table>`;
+
+  // 8. 分享条
+  html += `<div class="share-bar">
+    <p>把你的电影 DNA 分享到小红书 / 朋友圈</p>
+    <button onclick="generateShareCard()">生成分享卡</button>
+  </div>`;
+
+  document.getElementById("report-content").innerHTML = html;
+}
+
+function renderRadar(radar, geoDist) {
+  const W = 260, H = 260, cx = 130, cy = 130, R = 90;
+  const axes = [
+    { key: "visual", label: "视觉" }, { key: "cinematic", label: "镜头" },
+    { key: "narrative", label: "叙事" }, { key: "genre", label: "类型" },
+    { key: "geo", label: "地域" },
+  ];
+  const geoMax = Math.max(...Object.values(geoDist || { x: 0 }));
+  const values = axes.map(a => a.key === "geo" ? geoMax : (radar[a.key] || 0));
+  const N = axes.length;
+
+  let grid = "", lines = "", labels = "";
+  for (let i = 1; i <= 4; i++) {
+    const r = R * i / 4;
+    const pts = [];
+    for (let k = 0; k < N; k++) {
+      const a = -Math.PI/2 + 2*Math.PI*k/N;
+      pts.push(`${cx + r*Math.cos(a)},${cy + r*Math.sin(a)}`);
+    }
+    grid += `<polygon points="${pts.join(" ")}" fill="none" stroke="#efeae0" stroke-width="0.8" />`;
+  }
+  axes.forEach((ax, i) => {
+    const a = -Math.PI/2 + 2*Math.PI*i/N;
+    lines += `<line x1="${cx}" y1="${cy}" x2="${cx + R*Math.cos(a)}" y2="${cy + R*Math.sin(a)}" stroke="#efeae0" stroke-width="0.8" />`;
+    labels += `<text x="${cx + (R+18)*Math.cos(a)}" y="${cy + (R+18)*Math.sin(a)+3}" text-anchor="middle" fill="#3a3833" font-size="10">${ax.label}</text>`;
+  });
+  const dataPts = axes.map((_, i) => {
+    const a = -Math.PI/2 + 2*Math.PI*i/N;
+    return [cx + R*values[i]*Math.cos(a), cy + R*values[i]*Math.sin(a)];
+  });
+  const poly = dataPts.map(p => p.join(",")).join(" ");
+  const dots = dataPts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.5" fill="#b6442e" />`).join("");
+  return `<svg class="radar" viewBox="0 0 ${W} ${H}">
+    <g>${grid}</g><g>${lines}</g>
+    <polygon points="${poly}" fill="rgba(182,68,46,0.10)" stroke="#b6442e" stroke-width="1" />
+    ${dots}${labels}
+  </svg>`;
+}
+
+// === SHARE CARD GENERATION (Canvas) ===
+function generateShareCard() {
+  if (!currentResult) return;
+  const W = 1080, H = 1920;
+  const canvas = document.createElement("canvas");
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext("2d");
+
+  // ===== 杏米色调（与 generate_share_card.py 同步）=====
+  const C = {
+    PAPER:    "#f4ebda",
+    PAPER_2:  "#ebe0ca",
+    INK:      "#3e2e20",
+    INK_2:    "#68543e",
+    MUTED:    "#a08e76",
+    LINE:     "#d2c0a2",
+    LINE_SOFT:"#e2d4b8",
+    ACC:      "#944c30",
+    ACC_2:    "#82643c",
+  };
+
+  // 纯色底（杏米）
+  ctx.fillStyle = C.PAPER;
+  ctx.fillRect(0, 0, W, H);
+
+  // 字体
+  const serif = (size, bold) =>
+    `${bold ? "bold " : ""}${size}px "Songti SC","SimSun","Source Han Serif SC","Noto Serif CJK SC",serif`;
+  const sans = (size, bold) =>
+    `${bold ? "bold " : ""}${size}px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif`;
+  const mono = (size, bold) =>
+    `${bold ? "bold " : ""}${size}px "JetBrains Mono","Source Code Pro",monospace`;
+
+  // 画水平线工具
+  function hline(y, color, width = 1) {
+    ctx.strokeStyle = color; ctx.lineWidth = width;
+    ctx.beginPath(); ctx.moveTo(80, y); ctx.lineTo(W - 80, y); ctx.stroke();
+  }
+
+  ctx.textAlign = "center";
+
+  // ===== 顶部品牌带 =====
+  hline(70, C.INK, 1);
+  ctx.font = sans(26, false);
+  ctx.fillStyle = C.INK;
+  ctx.fillText("F  I  L  M  D  N  A", W/2, 110);
+  ctx.font = sans(16, false);
+  ctx.fillStyle = C.MUTED;
+  ctx.fillText("电  影  审  美  图  谱", W/2, 142);
+  hline(165, C.INK, 1);
+
+  // ===== DNA =====
+  ctx.font = mono(86, true);
+  ctx.fillStyle = C.ACC;
+  ctx.fillText(currentResult.dna_string, W/2, 270);
+
+  // ===== 人格 =====
+  ctx.font = serif(60, true);
+  ctx.fillStyle = C.INK;
+  ctx.fillText(currentResult.personality.type, W/2, 380);
+
+  ctx.font = sans(28, false);
+  ctx.fillStyle = C.INK_2;
+  ctx.fillText(currentResult.personality.tagline, W/2, 425);
+
+  // 调色盘 swatches
+  const palette = (currentResult.personality.color_palette || []).slice(0, 3);
+  if (palette.length > 0) {
+    const sw = 26, gap = 12;
+    const totalW = palette.length * sw + (palette.length - 1) * gap;
+    let sx = W/2 - totalW/2;
+    palette.forEach(c => {
+      ctx.fillStyle = c;
+      ctx.fillRect(sx, 460, sw, sw);
+      ctx.strokeStyle = C.LINE; ctx.lineWidth = 1;
+      ctx.strokeRect(sx, 460, sw, sw);
+      sx += sw + gap;
+    });
+  }
+
+  // ===== 雷达图 =====
+  drawRadarOnCanvas(ctx, currentResult.radar, currentResult.geo_distribution, W/2, 685, 145, C);
+
+  hline(905, C.LINE);
+
+  // ===== 诊断标签 =====
+  ctx.font = sans(22, true);
+  ctx.fillStyle = C.MUTED;
+  ctx.fillText("诊  断  标  签", W/2, 955);
+
+  const tags = currentResult.diagnostic_tags || [];
+  const cols = 3, cellW = 300, cellH = 100;
+  const startX = (W - cols * cellW) / 2;
+  const startY = 990;
+
+  tags.slice(0, 6).forEach((t, i) => {
+    const col = i % cols, row = Math.floor(i / cols);
+    const cx = startX + col * cellW + cellW/2;
+    const cy = startY + row * cellH;
+    // label
+    ctx.font = sans(20, false);
+    ctx.fillStyle = C.MUTED;
+    ctx.fillText(t.label, cx, cy + 22);
+    // value
+    ctx.font = serif(28, true);
+    ctx.fillStyle = C.INK;
+    ctx.fillText(t.value, cx, cy + 65);
+  });
+
+  // 网格竖线
+  ctx.strokeStyle = C.LINE_SOFT; ctx.lineWidth = 1;
+  for (let c = 1; c < cols; c++) {
+    const x = startX + c * cellW;
+    ctx.beginPath();
+    ctx.moveTo(x, startY + 10);
+    ctx.lineTo(x, startY + 2 * cellH - 10);
+    ctx.stroke();
+  }
+
+  hline(1210, C.LINE);
+
+  // ===== 最像导演 =====
+  ctx.font = sans(22, true);
+  ctx.fillStyle = C.MUTED;
+  ctx.textAlign = "center";
+  ctx.fillText("你  最  像  的  三  位", W/2, 1260);
+
+  (currentResult.closest_directors || []).slice(0, 3).forEach((d, i) => {
+    const y = 1310 + i * 80;
+    // 序号
+    ctx.font = sans(22, true);
+    ctx.fillStyle = C.ACC;
+    ctx.textAlign = "left";
+    ctx.fillText("0" + (i+1), 90, y + 28);
+
+    // 名字
+    ctx.font = serif(38, true);
+    ctx.fillStyle = C.INK;
+    ctx.fillText(d.name, 175, y + 28);
+
+    // 签名
+    ctx.font = sans(20, false);
+    ctx.fillStyle = C.MUTED;
+    ctx.fillText((d.signature || "").slice(0, 28), 175, y + 58);
+
+    // 百分比
+    ctx.font = mono(28, true);
+    ctx.fillStyle = C.ACC;
+    ctx.textAlign = "right";
+    ctx.fillText(`${Math.round(d.similarity * 100)}%`, W - 90, y + 28);
+  });
+
+  hline(1555, C.LINE);
+
+  // ===== 推荐 =====
+  ctx.font = sans(22, true);
+  ctx.fillStyle = C.MUTED;
+  ctx.textAlign = "center";
+  ctx.fillText("你  大  概  率  会  爱  的  片", W/2, 1605);
+
+  (currentResult.recommendations || []).slice(0, 5).forEach((r, i) => {
+    const y = 1665 + i * 42;
+    // 序号
+    ctx.font = sans(20, false);
+    ctx.fillStyle = C.MUTED;
+    ctx.textAlign = "left";
+    ctx.fillText(String(i + 1).padStart(2, "0"), 100, y);
+    // 片名
+    ctx.font = sans(24, false);
+    ctx.fillStyle = C.INK;
+    ctx.fillText(`《${r.title_zh}》`, 155, y);
+    // 导演 / 年份
+    const meta = r.year ? `${r.director}  ·  ${r.year}` : r.director;
+    ctx.font = sans(20, false);
+    ctx.fillStyle = C.ACC_2;
+    ctx.textAlign = "right";
+    ctx.fillText(meta, W - 100, y);
+  });
+
+  // ===== 底部 =====
+  hline(H - 70, C.INK, 1);
+  ctx.font = sans(22, false);
+  ctx.fillStyle = C.MUTED;
+  ctx.textAlign = "center";
+  ctx.fillText("FilmDNA  ·  你  的  电  影  审  美  图  谱", W/2, H - 38);
+
+  // 显示
+  const dataUrl = canvas.toDataURL("image/png");
+  document.getElementById("shareCardImg").src = dataUrl;
+  document.getElementById("shareModal").classList.add("show");
+}
+
+function drawRadarOnCanvas(ctx, radar, geoDist, cx, cy, R, C) {
+  const axes = [
+    { key: "visual", label: "视觉" }, { key: "cinematic", label: "镜头" },
+    { key: "narrative", label: "叙事" }, { key: "genre", label: "类型" },
+  ];
+  const values = axes.map(a => radar[a.key] || 0);
+  const N = axes.length;
+
+  // 网格
+  ctx.strokeStyle = C.LINE_SOFT;
+  ctx.lineWidth = 1;
+  for (let i = 1; i <= 5; i++) {
+    const r = R * i / 5;
+    ctx.beginPath();
+    for (let k = 0; k < N; k++) {
+      const a = -Math.PI/2 + 2*Math.PI*k/N;
+      const x = cx + r * Math.cos(a), y = cy + r * Math.sin(a);
+      if (k === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.stroke();
+  }
+  // 轴
+  ctx.strokeStyle = C.LINE;
+  axes.forEach((ax, i) => {
+    const a = -Math.PI/2 + 2*Math.PI*i/N;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + R*Math.cos(a), cy + R*Math.sin(a));
+    ctx.stroke();
+  });
+  // 标签
+  ctx.font = "26px -apple-system,sans-serif";
+  ctx.fillStyle = C.INK_2;
+  ctx.textAlign = "center";
+  axes.forEach((ax, i) => {
+    const a = -Math.PI/2 + 2*Math.PI*i/N;
+    const lx = cx + (R+50)*Math.cos(a);
+    const ly = cy + (R+50)*Math.sin(a) + 8;
+    ctx.fillText(ax.label, lx, ly);
+  });
+  // 数据多边形
+  ctx.beginPath();
+  const dataPts = [];
+  axes.forEach((_, i) => {
+    const a = -Math.PI/2 + 2*Math.PI*i/N;
+    const v = values[i];
+    const x = cx + R*v*Math.cos(a), y = cy + R*v*Math.sin(a);
+    dataPts.push([x, y]);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  ctx.fillStyle = "rgba(148,76,48,0.18)";  // ACC 半透
+  ctx.fill();
+  ctx.strokeStyle = C.ACC;
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // 节点
+  dataPts.forEach(([x, y]) => {
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI*2);
+    ctx.fillStyle = C.ACC;
+    ctx.fill();
+    ctx.strokeStyle = C.PAPER;
+    ctx.lineWidth = 2;
+    ctx.stroke();
+  });
+}
+
+function darken(hex, factor) {
+  const h = hex.replace("#", "");
+  const r = Math.round(parseInt(h.substr(0,2), 16) * factor);
+  const g = Math.round(parseInt(h.substr(2,2), 16) * factor);
+  const b = Math.round(parseInt(h.substr(4,2), 16) * factor);
+  return `rgb(${r},${g},${b})`;
+}
+
+function closeShareModal(ev) {
+  if (ev && ev.target.id !== "shareModal") return;
+  document.getElementById("shareModal").classList.remove("show");
+}
+</script>
+</body>
+</html>

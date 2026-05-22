@@ -1,0 +1,175 @@
+{
+  "_meta": {
+    "version": "1.0",
+    "naming_policy": "纯风格词命名，禁用MBTI字母。每型对应鲍德威尔象限+视觉/叙事极值组合。",
+    "axes": {
+      "quadrant": ["classical_narrative", "art_cinema", "parametric", "post_classical"],
+      "visual_pole": ["lyric", "austere"],
+      "narrative_pole": ["closed", "open"]
+    },
+    "mapping_logic": "用户向量落入鲍德威尔象限 + 视觉DNA高低 + 叙事DNA开放度 = 16型",
+    "size": 16
+  },
+  "types": [
+    {
+      "id": "art_lyric_open",
+      "type": "夜行者",
+      "tagline": "在霓虹边缘寻找未完成的告别",
+      "quadrant": "art_cinema",
+      "poles": {"visual": "lyric", "narrative": "open"},
+      "description": "你迷恋潮湿的色彩、错失的相遇、不愿落幕的暧昧。镜头流动你才安稳，结局必须留白你才允许它结束。王家卫和林奇是你的两侧夜光。",
+      "anchor_directors": ["王家卫", "大卫·林奇", "索菲亚·科波拉"],
+      "color_palette": ["#1B0B2E", "#C04C7A", "#F2D5A8"]
+    },
+    {
+      "id": "art_lyric_closed",
+      "type": "时间炼金术士",
+      "tagline": "在缓慢里看见永恒",
+      "quadrant": "art_cinema",
+      "poles": {"visual": "lyric", "narrative": "closed"},
+      "description": "你相信电影是雕刻时间的器具，画面里每一粒尘都该被光照见。塔可夫斯基的水滴和侯孝贤的台风，对你来说不是奇观，是时间的呼吸。",
+      "anchor_directors": ["塔可夫斯基", "侯孝贤", "马力克"],
+      "color_palette": ["#2C1810", "#A88B5C", "#E8E0CF"]
+    },
+    {
+      "id": "art_austere_open",
+      "type": "废墟诗人",
+      "tagline": "在熄灭的光里写未寄出的信",
+      "quadrant": "art_cinema",
+      "poles": {"visual": "austere", "narrative": "open"},
+      "description": "色彩对你是奢侈品。你要的是黑白光线、空旷建筑、未说出口的句子。安东尼奥尼让你心安——因为他承认了我们之间隔着雾。",
+      "anchor_directors": ["安东尼奥尼", "贝拉·塔尔", "锡兰"],
+      "color_palette": ["#3A3A3A", "#7A7A7A", "#C8C2B5"]
+    },
+    {
+      "id": "art_austere_closed",
+      "type": "白屋祷告者",
+      "tagline": "用一只手的特写完成一场救赎",
+      "quadrant": "art_cinema",
+      "poles": {"visual": "austere", "narrative": "closed"},
+      "description": "你要的不是故事，是仪式。布列松的手、伯格曼的脸、小津的榻榻米——这些镜头告诉你，约束本身就是一种自由。",
+      "anchor_directors": ["布列松", "伯格曼", "小津安二郎"],
+      "color_palette": ["#1F1F1F", "#5C5852", "#D4CFC4"]
+    },
+    {
+      "id": "classical_lyric_open",
+      "type": "晨光叙事人",
+      "tagline": "用大景拥抱小心事",
+      "quadrant": "classical_narrative",
+      "poles": {"visual": "lyric", "narrative": "open"},
+      "description": "你爱故事的清晰，也爱视觉的丰盛。情感弧线必须圆满，但留一道光可以照进未来。斯皮尔伯格和宫崎骏教会你，温柔也是一种结构。",
+      "anchor_directors": ["斯皮尔伯格", "宫崎骏", "新海诚"],
+      "color_palette": ["#FFB45A", "#5BA3D0", "#FFF6E5"]
+    },
+    {
+      "id": "classical_lyric_closed",
+      "type": "古典叙事主义者",
+      "tagline": "三幕结构里也藏着雷雨",
+      "quadrant": "classical_narrative",
+      "poles": {"visual": "lyric", "narrative": "closed"},
+      "description": "你尊重故事的法则。开头、转折、结尾，每一步都不能省略。希区柯克和黑泽明告诉你，规则之内可以建造星空。",
+      "anchor_directors": ["希区柯克", "黑泽明", "科波拉"],
+      "color_palette": ["#5C2A28", "#D9A45F", "#F5E8C9"]
+    },
+    {
+      "id": "classical_austere_open",
+      "type": "街角守夜人",
+      "tagline": "把镜头交给街道，把判断留给明天",
+      "quadrant": "classical_narrative",
+      "poles": {"visual": "austere", "narrative": "open"},
+      "description": "你拒绝奇观。新现实主义到法哈蒂，你相信电影最重要的工作是记录普通人的伦理两难。",
+      "anchor_directors": ["阿斯哈·法哈蒂", "肯·洛奇", "罗西里尼"],
+      "color_palette": ["#3D3D3D", "#8B7E6A", "#D8D2C5"]
+    },
+    {
+      "id": "classical_austere_closed",
+      "type": "素笺谱曲人",
+      "tagline": "用最素净的画面写最长情的家书",
+      "quadrant": "classical_narrative",
+      "poles": {"visual": "austere", "narrative": "closed"},
+      "description": "你相信人间值得，但要用克制说出来。是枝裕和、雷伊、成濑——他们让你确认：日常本身就是最大的史诗。",
+      "anchor_directors": ["是枝裕和", "萨蒂亚吉特·雷伊", "成濑巳喜男"],
+      "color_palette": ["#4A4036", "#A89478", "#EFE8DC"]
+    },
+    {
+      "id": "param_lyric_open",
+      "type": "玩具盒造梦人",
+      "tagline": "对称是一种甜蜜的强迫症",
+      "quadrant": "parametric",
+      "poles": {"visual": "lyric", "narrative": "open"},
+      "description": "你被严格的形式秩序吸引，又希望它能容纳一点失控。韦斯·安德森和热内是你的房间设计师，他们在玩具盒里安放永远不愿长大的角色。",
+      "anchor_directors": ["韦斯·安德森", "热内", "罗伊·安德森"],
+      "color_palette": ["#E8B6C1", "#7AA4B0", "#F5E2C8"]
+    },
+    {
+      "id": "param_lyric_closed",
+      "type": "形式神性建筑师",
+      "tagline": "对称即神秘，比例即上帝",
+      "quadrant": "parametric",
+      "poles": {"visual": "lyric", "narrative": "closed"},
+      "description": "你爱库布里克那种冷峻的几何，每一帧都是数学命题。形式不是装饰，形式就是内容。",
+      "anchor_directors": ["库布里克", "维伦纽瓦", "雷德利·斯科特"],
+      "color_palette": ["#0E1A2B", "#A85C3A", "#E8E0D2"]
+    },
+    {
+      "id": "param_austere_open",
+      "type": "薄雾拾遗者",
+      "tagline": "让一束光成为整部电影的主角",
+      "quadrant": "parametric",
+      "poles": {"visual": "austere", "narrative": "open"},
+      "description": "你被光的纯度迷住。维伦纽瓦的雾、芬奇的暗、索科洛夫的画面变形——少即是无限。",
+      "anchor_directors": ["维伦纽瓦", "芬奇", "索科洛夫"],
+      "color_palette": ["#1A1F2E", "#4F6878", "#C9CDD4"]
+    },
+    {
+      "id": "param_austere_closed",
+      "type": "经幡守仪人",
+      "tagline": "重复即真理，凝固即永恒",
+      "quadrant": "parametric",
+      "poles": {"visual": "austere", "narrative": "closed"},
+      "description": "你看罗伊·安德森那种固定机位时不会无聊，因为你知道他在做祈祷。重复的形式构成神圣感。",
+      "anchor_directors": ["罗伊·安德森", "蔡明亮", "贝拉·塔尔"],
+      "color_palette": ["#2E2E2E", "#7A7570", "#D5D0C8"]
+    },
+    {
+      "id": "post_lyric_open",
+      "type": "霓虹观察家",
+      "tagline": "类型片里也能拍出诗",
+      "quadrant": "post_classical",
+      "poles": {"visual": "lyric", "narrative": "open"},
+      "description": "你在商业类型外壳里看见了作者的指纹。朴赞郁的暴力、阿莫多瓦的色彩、斯派克·琼斯的天真——你享受混血。",
+      "anchor_directors": ["朴赞郁", "阿莫多瓦", "斯派克·琼斯"],
+      "color_palette": ["#FF4D6D", "#3D5AFE", "#FFE066"]
+    },
+    {
+      "id": "post_lyric_closed",
+      "type": "类型工匠",
+      "tagline": "在规则里走钢丝才显出本事",
+      "quadrant": "post_classical",
+      "poles": {"visual": "lyric", "narrative": "closed"},
+      "description": "你尊重类型片的成熟度，享受它的张力释放。塔伦蒂诺、芬奇、奉俊昊——形式炫技就是态度。",
+      "anchor_directors": ["塔伦蒂诺", "芬奇", "奉俊昊"],
+      "color_palette": ["#7B0F1A", "#D4A04C", "#F0E5C8"]
+    },
+    {
+      "id": "post_austere_open",
+      "type": "潜意识图书馆员",
+      "tagline": "故事可以散，梦不能醒",
+      "quadrant": "post_classical",
+      "poles": {"visual": "austere", "narrative": "open"},
+      "description": "你迷恋林奇式的迷宫——情节不是用来理解的，是用来回到梦里的。考夫曼陪你一起拆心智。",
+      "anchor_directors": ["大卫·林奇", "查理·考夫曼", "阿彼察邦"],
+      "color_palette": ["#1A0F1F", "#5C3A4F", "#C0B5A5"]
+    },
+    {
+      "id": "post_austere_closed",
+      "type": "都市人类学家",
+      "tagline": "把街道当显微镜",
+      "quadrant": "post_classical",
+      "poles": {"visual": "austere", "narrative": "closed"},
+      "description": "你把电影当社会切片。贾樟柯的国道、杨德昌的台北、奉俊昊的半地下——这些是你研究世界的现场。",
+      "anchor_directors": ["贾樟柯", "杨德昌", "奉俊昊"],
+      "color_palette": ["#2D2D2D", "#8B6F47", "#D4C9B5"]
+    }
+  ]
+}
